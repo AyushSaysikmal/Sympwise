@@ -1,0 +1,155 @@
+{% extends 'patientapp/base.html' %}
+
+
+{% block content %}
+
+
+<div class="card mt-1 p-4">
+
+  <ul class="nav nav-tabs mb-3" id="myTab0" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="home-tab0" data-mdb-toggle="tab" data-mdb-target="#home0" type="button"
+        role="tab" aria-controls="home" aria-selected="true">
+        Appointments
+      </button>
+    </li>
+
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="contact-tab0" data-mdb-toggle="tab" data-mdb-target="#contact0" type="button"
+        role="tab" aria-controls="contact" aria-selected="false">
+        Feedbacks
+      </button>
+    </li>
+
+  </ul>
+  <div class="tab-content" id="myTabContent0">
+    <div class="tab-pane fade show active" id="home0" role="tabpanel" aria-labelledby="home-tab0">
+
+
+      <div class="card p-4">
+        {% for i in messages %}
+        <p class="alert alert-success">{{i}}</p>
+        {% endfor %}
+        <table id="example" class="display table">
+          <thead>
+            <tr>
+              <th> Serial Number</th>
+              <th>Patient Name</th>
+              <th>User</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appointment in appointments %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td>{{appointment.name}}</td>
+              <td>{{appointment.patient.user.username}}</td>
+              <td>{{appointment.date}}</td>
+              <td>
+                {% if appointment.doctorReject %}
+
+                <a href="#" class="btn btn-danger btn-sm">Rejected</a>
+                {% else %}
+                {% if appointment.doctorAccept %}
+
+                {% if appointment.doctorCompleted %}
+                <a href="#" class="btn btn-success btn-sm">Completed</a>
+
+                {% else %}
+                <a href="#" class="btn btn-success btn-sm">Accepted</a>
+                <a href="{% url 'complete_appointment' appointment.id %}" class="btn btn-warning btn-sm">Click to
+                  Complete</a>
+                {% endif %}
+                {% else %}
+
+                <a href="{% url 'accept_appointment' appointment.id %}" class="btn btn-success btn-sm">Accept</a>
+                <a href="{% url 'reject_appointment' appointment.id %}" class="btn btn-danger btn-sm">Reject</a>
+                {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+
+          </tbody>
+        </table>
+
+      </div>
+
+    </div>
+
+
+
+
+    <div class="tab-pane fade" id="profile0" role="tabpanel" aria-labelledby="profile-tab0">
+      <div class="card">
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          {% for i in patient %}
+          <div class="col">
+            <div class="card h-100">
+              <img src="/media/{{i.photoPatient}}" class="card-img-top" alt="..." />
+              <div class="card-body">
+                <h5 class="card-title">{{i.fullName}}</h5>
+                <p class="card-text">
+                 {{i.aboutPatient}}
+                </p>
+              </div>
+              <div class="card-footer">
+                <small class="text-muted">Last updated 3 mins ago</small>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+          
+        </div>
+
+      </div>
+    </div>
+
+
+    <div class="tab-pane fade" id="contact0" role="tabpanel" aria-labelledby="contact-tab0">
+
+      <div class="card p-4">
+
+        <table id="example1" class="display table">
+          <thead>
+            <tr>
+              <th> Serial Number</th>
+              <th> Appointment ID</th>
+              <th>Date</th>
+              <th>Patient</th>
+              <th>Feedback Text</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in appointments%}
+            {% if i.patientFeedback %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td>{{i.id}}</td>
+              <td>{{i.date}}</td>
+              <td>{{i.name}}</td>
+              <td>{{i.patientFeedback}}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+            
+          </tbody>
+        </table>
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+</div>
+
+
+
+{% endblock %}

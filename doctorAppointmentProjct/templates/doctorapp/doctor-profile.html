@@ -1,0 +1,133 @@
+{% extends 'patientapp/base.html' %}
+
+
+{% block content %}
+
+<div class="text-center mt-4 mb-3">
+  <button class="btn btn-light btn-lg" style="width: 300px;">--- DOCTOR PROFILE ---</button>
+</div>
+
+
+
+<div class="row">
+
+  <div class="col-md-4 mt-3">
+    <div class="card p-3">
+      <img src="/media/{{doctor.photoDoctor}}" width="100%" alt="...">
+
+      <div class="text-center mt-3">
+        <h5>Mr. {{doctor.fullName}}</h5>
+        <p>{{doctor.aboutDoctor}}</p>
+
+
+
+        <label class="form-label mt-3" for="customFile">Choose profile photo</label>
+        <form action="{% url 'update_doctor_photo' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+          <input type="file" required class="form-control" required id="customFile" name="photoDoctor" />
+          <button type="submit" class="btn btn-lg btn-primary mt-3 mb-5">Update Photo</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-md-8 mt-5">
+    <div class="card p-3">
+      {% for message in messages %}
+        <p class="alert alert-success">{{message}}</p>
+      {% endfor %}
+      <form method="POST" action="{% url 'save_doctor_profile' %}">
+        {% csrf_token %}
+        <!-- 2 column grid layout with text inputs for the first and last names -->
+        
+         <!-- Text input -->
+         <div class="form-outline mb-4">
+            <input type="text" id="form6Example4" required class="form-control" value="{{doctor.fullName}}"  name="fullName"/>
+            <label class="form-label" for="form6Example4">full name</label>
+          </div>
+
+        <!-- Text input -->
+        <div class="form-outline mb-4">
+          <input type="text" id="form6Example4" disabled required class="form-control" value="{{doctor.user.username}}" />
+          <label class="form-label" for="form6Example4">Username</label>
+        </div>
+
+        <!-- Text input -->
+        <div class="form-outline mb-4">
+          <input type="number" id="form6Example4" required class="form-control" name="mobile" value="{{doctor.mobile}}" />
+          <label class="form-label" for="form6Example4">Mobile</label>
+        </div>
+
+        <!-- Email input -->
+        <div class="form-outline mb-4">
+          <input type="text" id="form6Example5" required class="form-control" name="address" value="{{doctor.address}}" />
+          <label class="form-label" for="form6Example5">Address</label>
+        </div>
+
+
+
+        <!-- Number input -->
+        <div class="form-outline mb-4">
+          <input type="text" id="form6Example6" required class="form-control"  name="city" value="{{doctor.city}}" />
+          <label class="form-label" for="form6Example6">City</label>
+        </div>
+
+        <!-- Text input -->
+        <div class="form-outline mb-4">
+          <input type="text" id="form6Example4" required class="form-control" name="state" value="{{doctor.state}}" />
+          <label class="form-label" for="form6Example4">State</label>
+        </div>
+
+        <!-- Text input -->
+        <div class="form-outline mb-4">
+          <input type="text" id="form6Example4" required class="form-control" name="country" value="{{doctor.country}}" />
+          <label class="form-label" for="form6Example4">Country</label>
+        </div>
+
+        <!-- Text input -->
+        <div class="form-outline mb-4">
+          <input type="number" id="form6Example4" required class="form-control" name="pinCode" value="{{doctor.pinCode}}" />
+          <label class="form-label" for="form6Example4">Pincode</label>
+        </div>
+
+         <!-- Text input -->
+         <div class="form-outline mb-4">
+            <input type="text" id="form6Example4" required class="form-control" name="education" value="{{doctor.education}}" />
+            <label class="form-label" for="form6Example4">Education</label>
+          </div>
+
+          <div class="form-outline mb-4">
+            <input type="text" id="form6Example4" required class="form-control" name="speciality" value="{{doctor.speciality}}" />
+            <label class="form-label" for="form6Example4">Speciality</label>
+          </div>
+
+        <!-- Message input -->
+        <div class="form-outline mb-4">
+          <textarea class="form-control" required id="form6Example7" rows="4" name="aboutDoctor">{{doctor.aboutDoctor}}</textarea>
+          <label class="form-label" for="form6Example7">About information</label>
+        </div>
+
+
+
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary btn-block mb-5 btn-lg">UPDATE PROFILE</button>
+      </form>
+
+    </div>
+
+  </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{% endblock %}

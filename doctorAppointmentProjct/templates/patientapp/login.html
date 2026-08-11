@@ -1,0 +1,76 @@
+{% extends 'patientapp/base.html' %}
+
+
+{% block content %}
+
+
+
+<div class="mt-3 mb-3 p-4">
+  <div class="card text-center p-3">
+    <div class="row">
+      <div class="col-sm-12 col-md-6 mb-5">
+        <div class="card p-4">
+
+          <div class="text-center mb-3">
+            <button class="btn btn-light btn-lg mb-3">LOGIN HERE</button>
+          </div>
+          {% for i in messages %}
+          <p class="alert alert-danger">{{i}}</p>
+          {% endfor %}
+          <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <!-- Email input -->
+            <div class="form-outline mb-4">
+              <input type="text" id="form1Example1" name="username" class="form-control" />
+              <label class="form-label" for="form1Example1" >Username</label>
+            </div>
+
+            <!-- Password input -->
+            <div class="form-outline mb-4">
+              <input type="password" id="form1Example2"  name="password" class="form-control" />
+              <label class="form-label" for="form1Example2">Password</label>
+            </div>
+
+            <!-- 2 column grid layout for inline styling -->
+            <div class="row mb-4">
+              <div class="col d-flex justify-content-center">
+                <!-- Checkbox -->
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="form1Example3" checked />
+                  <label class="form-check-label" for="form1Example3"> Remember me </label>
+                </div>
+              </div>
+
+              <div class="col">
+                <!-- Simple link -->
+                <a href="#!">Forgot password?</a>
+              </div>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-primary btn-block mt-5 mb-5">Sign in</button>
+          </form>
+
+          <label>Dont have Account ? </label>
+          <a style="padding-bottom: 14%;" href="{% url 'register' %}">Create New Account</a>
+
+
+        </div>
+
+      </div>
+
+
+      <div class="col-sm-12 col-md-6 offset-md-0">
+        <div class="card p-4">
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbt8O9agjgkIDcPpF2AkAA5EJY2Vsf7WZxFY3sLaodBpSUHmJXrE8g2bxI8tpn6Uudj7M&usqp=CAU"
+            width="100%" height="500px">
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

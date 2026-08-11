@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Medical Analysis Platform{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            --dark-bg: #1a1d29;
+            --card-bg: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --border-radius: 16px;
+            --border-radius-sm: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Main Content */
+
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-bottom: 1px solid var(--border-color);
+            border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+            padding: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.75rem;
+        }
+
+        .btn-custom {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            border-radius: var(--border-radius-sm);
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-custom:hover {
+            background: var(--secondary-gradient);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: var(--border-radius-sm);
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .alert {
+            border: none;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Floating Chatbot Button */
+        .chatbot-float-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .chatbot-float-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            background: var(--secondary-gradient);
+        }
+
+        .chatbot-float-btn.active {
+            background: #dc3545;
+        }
+
+        .chatbot-float-btn.active i::before {
+            content: "\f00d"; /* Font Awesome times icon */
+        }
+
+        /* Chatbot Modal */
+        .chatbot-modal {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 25px;
+            width: 400px;
+            height: 500px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 999;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .chatbot-modal.show {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chatbot-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .chatbot-header h5 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .chatbot-close {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .chatbot-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .chatbot-body {
+            flex: 1;
+            padding: 0;
+            background: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-assistant-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        .iframe-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+        }
+
+        .iframe-loading .spinner-border {
+            width: 2rem;
+            height: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            border-radius: 20px;
+            padding: 0.5rem 0.875rem;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+
+        .bg-success {
+            background: var(--success-gradient) !important;
+        }
+
+        .bg-warning {
+            background: var(--warning-gradient) !important;
+            color: var(--text-primary) !important;
+        }
+
+        /* Mobile Responsive Design */
+        @media (max-width: 768px) {
+            .chatbot-modal {
+                width: calc(100vw - 20px);
+                right: 10px;
+                bottom: 80px;
+                height: 70vh;
+                max-height: 500px;
+            }
+
+            .chatbot-float-btn {
+                right: 15px;
+                bottom: 15px;
+                width: 55px;
+                height: 55px;
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .chatbot-modal {
+                width: calc(100vw - 10px);
+                right: 5px;
+                bottom: 70px;
+                height: 60vh;
+            }
+        }
+
+    .btn-outline-info{
+    margin-left: 540px;
+    margin-top: 50px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Floating Chatbot Button -->
+    <button class="chatbot-float-btn" id="chatbotBtn">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- Chatbot Modal -->
+    <div class="chatbot-modal" id="chatbotModal">
+        <div class="chatbot-header">
+            <h5><i class="fas fa-robot me-2"></i>AI Assistant</h5>
+            <button class="chatbot-close" id="chatbotClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chatbot-body" id="chatbotBody">
+            <div class="iframe-loading" id="iframeLoading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <small>Loading AI Assistant...</small>
+            </div>
+            <iframe class="ai-assistant-iframe" id="aiAssistantIframe" style="display: none;"></iframe>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-area">
+        <div class="p-4">
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Chatbot functionality
+        const chatbotBtn = document.getElementById('chatbotBtn');
+        const chatbotModal = document.getElementById('chatbotModal');
+        const chatbotClose = document.getElementById('chatbotClose');
+        const aiAssistantIframe = document.getElementById('aiAssistantIframe');
+        const iframeLoading = document.getElementById('iframeLoading');
+        let iframeLoaded = false;
+
+        // Toggle chatbot modal
+        function toggleChatbot() {
+            const isVisible = chatbotModal.classList.contains('show');
+
+            if (isVisible) {
+                closeChatbot();
+            } else {
+                openChatbot();
+            }
+        }
+
+        // Open chatbot modal
+        function openChatbot() {
+            chatbotModal.classList.add('show');
+            chatbotBtn.classList.add('active');
+
+            // Load iframe content only once
+            if (!iframeLoaded) {
+                loadAIAssistant();
+            }
+        }
+
+        // Close chatbot modal
+        function closeChatbot() {
+            chatbotModal.classList.remove('show');
+            chatbotBtn.classList.remove('active');
+        }
+
+        // Load AI Assistant iframe
+        function loadAIAssistant() {
+            const aiAssistantUrl = "{% url 'ai_assistant_chat' %}";
+
+            // Show loading spinner
+            iframeLoading.style.display = 'flex';
+            aiAssistantIframe.style.display = 'none';
+
+            // Set iframe source
+            aiAssistantIframe.src = aiAssistantUrl;
+
+            // Handle iframe load event
+            aiAssistantIframe.onload = function() {
+                iframeLoading.style.display = 'none';
+                aiAssistantIframe.style.display = 'block';
+                iframeLoaded = true;
+            };
+
+            // Handle iframe error
+            aiAssistantIframe.onerror = function() {
+                iframeLoading.innerHTML = `
+                    <i class="fas fa-exclamation-triangle text-warning mb-2" style="font-size: 2rem;"></i>
+                    <small>Failed to load AI Assistant</small>
+                    <button class="btn btn-sm btn-primary mt-2" onclick="loadAIAssistant()">
+                        <i class="fas fa-redo me-1"></i>Retry
+                    </button>
+                `;
+            };
+        }
+
+        // Event listeners
+        chatbotBtn.addEventListener('click', toggleChatbot);
+        chatbotClose.addEventListener('click', closeChatbot);
+
+        // Close chatbot when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!chatbotModal.contains(e.target) && !chatbotBtn.contains(e.target)) {
+                if (chatbotModal.classList.contains('show')) {
+                    closeChatbot();
+                }
+            }
+        });
+
+        // Handle escape key to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && chatbotModal.classList.contains('show')) {
+                closeChatbot();
+            }
+        });
+
+        // CSRF Token setup for AJAX requests
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

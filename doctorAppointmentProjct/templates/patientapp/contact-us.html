@@ -1,0 +1,40 @@
+{% extends 'patientapp/base.html' %}
+
+
+{% block content %}
+
+<div class="text-center mt-4 mb-3">
+    <button class="btn btn-light btn-lg" style="width: 300px;">--- CONTACT US ---</button>
+</div>
+
+<div class="mt-3 mb-3 p-4">
+    <div class="card text-center p-3">
+        <div class="row">
+            <div class="col-sm-5 col-md-6">
+                <h5 class="text-center"> ADDRESS</h5>
+                <P>gautam nagar tekdi wadi khadgaon road amravati- 23 india maharashtaa.
+            
+            </div>
+
+
+            <div class="col-sm-5 offset-sm-2 col-md-6 offset-md-0">
+                <h5 class="text-center"> MOBILE NUMBER</h5>
+                <p>Ashish  : +91 - 123456789</p>
+                <p>Ankush  : +91 - 1236547898</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!--Google map-->
+<div id="map-container-google-1" class="z-depth-1-half map-container p-4 mb-4" style="height: 400px">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d29769.307675267544!2d78.97285037702778!3d21.145892249827643!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd4eaeeafe449ed%3A0x7943956b036050a2!2sWadi%2C%20Nagpur%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1638607792465!5m2!1sen!2sin"
+    width="100%" height="400px" frameborder="0" style="border:0" allowfullscreen></iframe>
+</div>
+
+<!--Google Maps-->
+
+{% endblock %}

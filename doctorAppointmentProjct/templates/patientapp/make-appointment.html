@@ -1,0 +1,79 @@
+{% extends 'patientapp/base.html' %}
+
+
+{% block content %}
+
+<div class="text-center mt-4 mb-3">
+    <button class="btn btn-light btn-lg" style="width: 300px;">--- MAKE APPOINTMENT ---</button>
+</div>
+
+<div class="text-center mb-2">
+  {% for message in messages %}
+    <p class="alert alert-success">{{message}} <a href="{% url 'patient-dashboard' %}">View Appointments</a> </p>
+    {% endfor %}
+</div>
+
+
+<div class="card mt-3 p-5">
+
+    <div class="text-center mt-2 text-center" style="width:70%;margin:auto">
+
+  <form method="POST" action="{% url 'appointment_sent' doctor.id %}">
+    {% csrf_token %}
+        
+  <!-- Email input -->
+  <div class="form-outline mb-4">
+    <input type="text" id="form1Example1" class="form-control"  value="{{doctor.fullName}}" name="doctor_name"/>
+    <label class="form-label" for="form1Example1">Doctor Name</label>
+  </div>
+  <input type="hidden" value="{{doctor.id}}" name="doctor_id">
+
+  <!-- Password input -->
+  <div class="form-outline mb-4">
+    <input type="text" id="form1Example2" class="form-control" name="full_name" />
+    <label class="form-label" for="form1Example2">Enter your Name</label>
+  </div>
+
+  
+  <!-- Password input -->
+  <div class="form-outline mb-4">
+    <input type="email" id="form1Example3" class="form-control"  name="email"/>
+    <label class="form-label" for="form1Example3">Email </label>
+  </div>
+
+   <!-- Password input -->
+   <div class="form-outline mb-4">
+    <input type="number" id="form1Example3" class="form-control" name="mobile" />
+    <label class="form-label" for="form1Example3">mobile </label>
+  </div>
+
+   <!-- Password input -->
+   <div class="form-outline mb-4">
+    <input type="date" id="form1Example3" class="form-control"  name="date"/>
+    <label class="form-label" for="form1Example3">Date </label>
+  </div>
+
+
+  
+
+  <!-- Submit button -->
+  <button type="submit" class="btn btn-primary btn-block">BOOK APPOINTMENT</button>
+</form>
+
+
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

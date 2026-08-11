@@ -1,0 +1,45 @@
+{% extends 'patientapp/base.html' %}
+
+
+{% block content %}
+
+<div class="text-center mt-4 mb-3">
+    <button class="btn btn-light btn-lg" style="width: 300px;">--- {{service.name}} ---</button>
+</div>
+
+
+
+<div class="row">
+
+  <div class="col-md-4">
+  <div class="card p-3">
+          <img src="/media/{{service.image}}"width="100%" alt="...">
+
+       
+        
+  </div>
+</div>
+
+
+  <div class="col-md-8 mt-4">
+    
+        
+<div class="card p-4">
+    {{service.description}}
+</div>
+
+  
+  </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{% endblock %}

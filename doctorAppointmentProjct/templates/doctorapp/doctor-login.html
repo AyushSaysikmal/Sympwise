@@ -1,0 +1,38 @@
+{% extends 'patientapp/base.html' %}
+
+
+{% block content %}
+
+<div class="text-center mt-4 mb-3">
+    <button class="btn btn-light btn-lg" style="width: 300px;">--- DOCTOR LOGIN ---</button>
+</div>
+
+
+<div class="card p-5" style="margin-left: 15%;margin-right: 15%;">
+  {% for message in messages %}
+
+    <p class="alert alert-danger">{{message}}</p>
+
+  {% endfor %}
+    <form method="POST" action="{% url 'doctor-login' %}">
+      {% csrf_token %}
+        <!-- Email input -->
+        <div class="form-outline mb-4">
+          <input type="text" id="form1Example1" class="form-control" name="username" />
+          <label class="form-label" for="form1Example1">Username</label>
+        </div>
+      
+        <!-- Password input -->
+        <div class="form-outline mb-4">
+          <input type="password" id="form1Example2" class="form-control" name="password" />
+          <label class="form-label" for="form1Example2">Password</label>
+        </div>
+      
+        
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+      </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,150 @@
+
+{% extends 'patientapp/base.html' %}
+
+
+{% block content %}
+
+<div class="text-center mt-4 mb-3">
+    <button class="btn btn-light btn-lg" style="width: 300px;">--- DOCTOR DETAIL ---</button>
+</div>
+
+
+
+<div class="row">
+
+  <div class="col-md-4">
+  <div class="card p-3">
+          <img src="/media/{{doctor.photoDoctor}}"width="100%" alt="...">
+
+        <div class="text-center mt-3">
+        <h5>Dr. {{doctor.fullName|default:""}}</h5>
+        <p>{{doctor.education|default:""}}</p>
+        <p>{{doctor.speciality|default:""}}</p>
+        <a href="{% url 'make-appointment' doctor.id %}" class="btn btn-lg btn-primary mt-3 mb-5">BOOK APPOINTMENT</a>
+        </div>
+  </div>
+</div>
+
+
+  <div class="col-md-8 mt-4">
+    
+        
+<div class="card p-4">
+
+    <table class="table">
+
+    <tr>
+     <tr>
+      <th scope="col">Full Name</th>
+      <th>:</th>
+      <th scope="col">{{doctor.fullName|default:""}}</th>
+     </tr>
+    </tr>
+
+
+    
+    <tr>
+     <tr>
+      <th scope="col">Mobile Number</th>
+      <th>:</th>
+      <th scope="col">{{doctor.mobile|default:""}}</th>
+     </tr>
+    </tr>
+
+
+
+    <tr>
+      <tr>
+       <th scope="col">Education</th>
+       <th>:</th>
+       <th scope="col">{{doctor.education|default:""}}</th>
+      </tr>
+     </tr>
+
+     
+     <tr>
+      <tr>
+       <th scope="col">Speciality</th>
+       <th>:</th>
+       <th scope="col">{{doctor.speciality|default:""}}</th>
+      </tr>
+     </tr>
+ 
+
+    
+    <tr>
+     <tr>
+      <th scope="col">Address</th>
+      <th>:</th>
+      <th scope="col">{{doctor.address|default:""}}</th>
+     </tr>
+    </tr>
+
+
+    
+    <tr>
+     <tr>
+      <th scope="col">City</th>
+      <th>:</th>
+      <th scope="col">{{doctor.city|default:""}}</th>
+     </tr>
+    </tr>
+
+
+    
+    <tr>
+     <tr>
+      <th scope="col">State</th>
+      <th>:</th>
+      <th scope="col">{{doctor.state|default:""}}</th>
+     </tr>
+    </tr>
+
+    
+    <tr>
+     <tr>
+      <th scope="col">Country</th>
+      <th>:</th>
+      <th scope="col">{{doctor.country|default:""}}</th>
+     </tr>
+    </tr>
+
+
+    
+    <tr>
+     <tr>
+      <th scope="col">Pincode</th>
+      <th>:</th>
+      <th scope="col">{{doctor.pinCode|default:""}}</th>
+     </tr>
+    </tr>
+
+
+    
+    <tr>
+     <tr>
+      <th scope="col">About Doctor</th>
+      <th>:</th>
+      <th scope="col">{{doctor.aboutDoctor|default:""}}</th>
+     </tr>
+    </tr>
+    
+</table>
+
+</div>
+
+  
+  </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{% endblock %}

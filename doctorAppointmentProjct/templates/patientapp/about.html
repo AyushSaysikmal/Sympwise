@@ -1,0 +1,62 @@
+{% extends 'patientapp/base.html' %}
+
+
+{% block content %}
+
+<div class="text-center mt-4 mb-3">
+    <button class="btn btn-light btn-lg" style="width: 300px;">--- ABOUT US ---</button>
+</div>
+
+<div class="mt-3 mb-3 p-4">
+    <div class="card text-center p-3">
+        <h5 class="text-center mb-3">THIS IS ABOUT HEADING</h5>
+        <p>
+            This is the first item's accordion body. It is shown by default, until the collapse plugin adds the
+            appropriate
+            classes that we use to style each element. These classes control the overall appearance, as well as the
+            showing and
+            hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables.
+            It's also
+            worth noting that just about any HTML can go within the .accordion-body, though the transition does limit
+            overflow.
+        </p>
+    </div>
+</div>
+
+
+
+<div class="mt-3 mb-3 p-4">
+    <div class="card text-center p-3">
+        <h5 class="text-center mb-3">OUR TEAM</h5>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for team_member in team_members %}
+            <div class="col">
+                <div class="card h-100">
+                    <img src="/media/{{team_member.teamMemberPhoto}}" class="card-img-top" alt="..."  height="300px"/>
+                    <div class="card-body">
+                        <h5 class="card-title">{{team_member.name}}</h5>
+                        <p class="card-text">
+                            {{team_member.about|slice:":250"}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            
+        </div>
+    </div>
+</div>
+
+
+
+
+<!--Google map-->
+<div id="map-container-google-1" class="z-depth-1-half map-container p-4 mb-4" style="height: 400px">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d29769.307675267544!2d78.97285037702778!3d21.145892249827643!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd4eaeeafe449ed%3A0x7943956b036050a2!2sWadi%2C%20Nagpur%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1638607792465!5m2!1sen!2sin"
+    width="100%" height="400px" frameborder="0" style="border:0" allowfullscreen></iframe>
+</div>
+
+<!--Google Maps-->
+
+{% endblock %}

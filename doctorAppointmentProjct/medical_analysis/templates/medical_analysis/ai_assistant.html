@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - Medical Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            --dark-bg: #1a1d29;
+            --card-bg: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f8fafc;
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* Iframe-optimized layout */
+        .chatbot-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: white;
+            overflow: hidden;
+        }
+
+        /* Compact header for iframe */
+        .chat-compact-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-compact-header h6 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .chat-compact-header i {
+            font-size: 1rem;
+        }
+
+        /* Chat messages area optimized for small space */
+        .chat-messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.75rem;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
+
+        .chat-messages-area::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages-area::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 2px;
+        }
+
+        /* Compact message bubbles */
+        .message-bubble {
+            max-width: 85%;
+            padding: 0.65rem 0.9rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+            animation: messageSlideIn 0.3s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-user {
+            align-self: flex-end;
+            background: var(--primary-gradient);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message-assistant {
+            align-self: flex-start;
+            background: white;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message-meta {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .message-user .message-meta {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Welcome state for empty chat */
+        .welcome-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .welcome-state i {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-state h6 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .welcome-state p {
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            align-self: flex-start;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            border-bottom-left-radius: 4px;
+            padding: 0.65rem 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .typing-animation {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-animation span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typingPulse 1.4s infinite ease-in-out;
+        }
+
+        .typing-animation span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-animation span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingPulse {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Compact input area */
+        .chat-input-area {
+            background: white;
+            border-top: 1px solid var(--border-color);
+            padding: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .input-group {
+            display: flex;
+            background: #f8fafc;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 0.4rem;
+            transition: var(--transition);
+        }
+
+        .input-group:focus-within {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+
+        .message-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.6rem;
+            resize: none;
+            max-height: 60px;
+            overflow-y: auto;
+            line-height: 1.4;
+        }
+
+        .message-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .send-button {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .send-button:hover:not(:disabled) {
+            background: var(--secondary-gradient);
+            transform: scale(1.05);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .send-button i {
+            font-size: 0.75rem;
+        }
+
+        /* Quick suggestions for better UX in small space */
+        .quick-suggestions {
+            padding: 0.5rem 0.75rem;
+            background: #f8fafc;
+            border-top: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .quick-suggestions h6 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .suggestion-chip {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 12px;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .suggestion-chip:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+            color: #667eea;
+        }
+
+        /* Responsive adjustments for very small screens */
+        @media (max-width: 400px) {
+            .message-bubble {
+                max-width: 95%;
+                font-size: 0.8rem;
+                padding: 0.5rem 0.7rem;
+            }
+
+            .chat-compact-header {
+                padding: 0.6rem 0.8rem;
+            }
+
+            .chat-messages-area {
+                padding: 0.5rem;
+                gap: 0.5rem;
+            }
+
+            .suggestion-chip {
+                font-size: 0.7rem;
+                padding: 0.25rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <!-- Compact Header -->
+        <div class="chat-compact-header">
+            <i class="fas fa-robot"></i>
+            <h6>AI Medical Assistant</h6>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="chat-messages-area" id="messagesArea">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message-bubble message-{{ message.message_type }}">
+                        <div>{{ message.content|linebreaks }}</div>
+                        <div class="message-meta">
+                            {% if message.message_type == 'user' %}
+                                <i class="fas fa-user"></i>
+                            {% else %}
+                                <i class="fas fa-robot"></i>
+                            {% endif %}
+                            <span>{{ message.timestamp|date:"H:i" }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="welcome-state" id="welcomeState">
+                    <i class="fas fa-robot"></i>
+                    <h6>Welcome!</h6>
+                    <p>I'm your AI medical assistant. Ask me anything about your health or this platform.</p>
+                </div>
+            {% endif %}
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                <div class="typing-animation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <small>AI is thinking...</small>
+            </div>
+        </div>
+
+        <!-- Quick Suggestions -->
+        <div class="quick-suggestions">
+            <h6>Quick Ask</h6>
+            <div class="suggestion-chips">
+                <span class="suggestion-chip" onclick="sendSuggestion('How do I upload images?')">Upload Images</span>
+                <span class="suggestion-chip" onclick="sendSuggestion('What symptoms can you analyze?')">Symptoms</span>
+                <span class="suggestion-chip" onclick="sendSuggestion('When should I see a doctor?')">See Doctor</span>
+                <span class="suggestion-chip" onclick="sendSuggestion('How accurate are results?')">Accuracy</span>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-input-area">
+            <form id="chatForm">
+                <div class="input-group">
+                    <textarea class="message-input" id="messageInput"
+                            placeholder="Type your message..."
+                            rows="1"></textarea>
+                    <button type="submit" class="send-button" id="sendButton">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let sessionId = '{{ session.id }}' || 'default';
+
+        $(document).ready(function() {
+            // Auto-resize textarea
+            $('#messageInput').on('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 60) + 'px';
+            });
+
+            // Handle form submission
+            $('#chatForm').submit(function(e) {
+                e.preventDefault();
+                sendMessage();
+            });
+
+            // Handle Enter key (Shift+Enter for new line)
+            $('#messageInput').keydown(function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Focus on input
+            $('#messageInput').focus();
+
+            // Scroll to bottom
+            scrollToBottom();
+        });
+
+        function sendMessage() {
+            const message = $('#messageInput').val().trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage('user', message);
+            $('#messageInput').val('').css('height', 'auto');
+
+            // Show typing indicator
+            $('#typingIndicator').show();
+            scrollToBottom();
+
+            // Disable send button
+            $('#sendButton').prop('disabled', true);
+            $('#welcomeState').hide();
+
+            // Send to backend
+            $.ajax({
+                url: `/assistant/${sessionId}/`,
+                method: 'POST',
+                data: JSON.stringify({message: message}),
+                contentType: 'application/json',
+                success: function(response) {
+                    $('#typingIndicator').hide();
+                    addMessage('assistant', response.response || response.message || 'I understand your question. Let me help you with that.');
+                    $('#sendButton').prop('disabled', false);
+                    $('#messageInput').focus();
+                },
+                error: function(xhr) {
+                    $('#typingIndicator').hide();
+                    $('#sendButton').prop('disabled', false);
+                    addMessage('assistant', 'Sorry, I encountered an issue. Please try again.');
+                    $('#messageInput').focus();
+                }
+            });
+        }
+
+        function addMessage(type, content) {
+            const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const icon = type === 'user' ? 'user' : 'robot';
+
+            const messageHtml = `
+                <div class="message-bubble message-${type}">
+                    <div>${content.replace(/\n/g, '<br>')}</div>
+                    <div class="message-meta">
+                        <i class="fas fa-${icon}"></i>
+                        <span>${timestamp}</span>
+                    </div>
+                </div>
+            `;
+
+            $('#messagesArea').append(messageHtml);
+            scrollToBottom();
+        }
+
+        function sendSuggestion(message) {
+            $('#messageInput').val(message);
+            sendMessage();
+        }
+
+        function scrollToBottom() {
+            const container = $('#messagesArea')[0];
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+
+        // CSRF Token setup for AJAX requests
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+{% extends 'patientapp/base.html' %}
+
+
+{% block content %}
+
+<div class="text-center mt-4 mb-3">
+    <button class="btn btn-light btn-lg" style="width: 300px;">---  CHECK DISEASE  ---</button>
+</div>
+<div class="container">
+    <form method="POST" action="{% url 'predict_disease' %}">
+        {% csrf_token %}
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1>{{message}}</h1>
+                <a href="{% url 'generate_pdf_report' %}?prediction={{ message|urlencode }}" class="btn btn-danger btn-sm ms-3">
+                    <i class="fas fa-file-pdf"></i> Generate PDF
+                </a>
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row">
+
+            <div class="col-md-4 mt-4">
+                <select class="form-select" name="itching">
+                    <option value="0" selected>Itching</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class="col-md-4 mt-4">
+                <select class="form-select" required  name="skin_rash">
+                    <option  value="0"  selected>skin_rash</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class="col-md-4 mt-4">
+                <select class="form-select" required  name="nodal_skin_eruptions">
+                    <option  value="0"  selected>nodal_skin_eruptions</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class="col-md-4 mt-4">
+                <select class="form-select" required  name="continuous_sneezing">
+                    <option  value="0"  selected>continuous_sneezing</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="shivering">
+                    <option  value="0"  selected>shivering</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="chills">
+                    <option  value="0"  selected>chills</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="joint_pain">
+                    <option  value="0"  selected>joint_pain</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="stomach_pain">
+                    <option  value="0"  selected>stomach_pain</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="acidity">
+                    <option  value="0"  selected>acidity</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="ulcers_on_tongue">
+                    <option  value="0"  selected>ulcers_on_tongue</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="muscle_wasting">
+                    <option  value="0"  selected>muscle_wasting</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="vomiting">
+                    <option  value="0"  selected>vomiting</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="burning_micturition">
+                    <option  value="0"  selected>burning_micturition</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="spotting_urination">
+                    <option  value="0"  selected>spotting_urination</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="fatigue">
+                    <option  value="0"  selected>fatigue</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="weight_gain">
+                    <option  value="0"  selected>weight_gain</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="anxiety">
+                    <option  value="0"  selected>anxiety</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="cold_hands_and_feets">
+                    <option  value="0"  selected>cold_hands_and_feets</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="mood_swings">
+                    <option  value="0"  selected>mood_swings</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+            <div class=" col-md-4 mt-4">
+                <select class="form-select" required  name="weight_loss">
+                    <option  value="0"  selected>weight_loss</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+            </div>
+
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-warning mt-5 btn-lg">
+                PREDICT
+            </button>
+        </div>
+
+    </form>
+
+    <a href="{% url 'image_analysis' %}" class="btn btn-outline-info btn-result">
+                <i class="fas fa-camera-retro"></i>
+                Try Image Analysis
+            </a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,715 @@
+{% extends 'patientapp/base.html' %}
+
+{% block title %}
+<title>Medical Image Analysis - Health Prediction</title>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Use CSS variables from base template */
+    .page-content {
+        min-height: calc(100vh - 200px); /* Account for navbar and footer */
+    }
+
+    .container-fluid-img {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+
+    .page-header {
+        background: var(--card-bg, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: var(--border-radius, 16px);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.04));
+    }
+
+    .page-header h2 {
+        color: var(--text-primary, #2d3748);
+        margin: 0 0 0.5rem 0;
+        font-weight: 600;
+    }
+
+    .page-header p {
+        color: var(--text-secondary, #718096);
+        margin: 0;
+    }
+
+    /* Use card styling from base template */
+    .form-card {
+        background: var(--card-bg, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: var(--border-radius, 16px);
+        box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+        margin-bottom: 2rem;
+        transition: var(--transition, all 0.3s cubic-bezier(0.4, 0, 0.2, 1));
+        backdrop-filter: blur(10px);
+    }
+
+    .form-card:hover {
+        box-shadow: var(--shadow-lg, 0 8px 24px rgba(0,0,0,0.12));
+        transform: translateY(-2px);
+    }
+
+    .form-section {
+        padding: 2rem;
+        border-bottom: 1px solid var(--border-color, #f8f9fa);
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-primary, #2d3748);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-label i {
+        color: #667eea; /* Using primary color from base */
+    }
+
+    .form-control {
+        border: 1px solid var(--border-color, #ced4da);
+        border-radius: var(--border-radius-sm, 12px);
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: var(--transition, all 0.3s cubic-bezier(0.4, 0, 0.2, 1));
+        background: var(--card-bg, white);
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        outline: none;
+    }
+
+    .form-text {
+        color: var(--text-secondary, #6c757d);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    /* Upload area with base template styling */
+    .upload-area {
+        border: 2px dashed var(--border-color, #ced4da);
+        border-radius: var(--border-radius-sm, 12px);
+        padding: 2rem;
+        text-align: center;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        transition: var(--transition, all 0.3s cubic-bezier(0.4, 0, 0.2, 1));
+        position: relative;
+        cursor: pointer;
+    }
+
+    .upload-area:hover {
+        border-color: #667eea;
+        background: #e3f2fd;
+    }
+
+    .upload-area.dragover {
+        border-color: #667eea;
+        background: #e3f2fd;
+    }
+
+    .upload-icon {
+        font-size: 2.5rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+
+    .upload-text {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--text-primary, #495057);
+        margin-bottom: 0.5rem;
+    }
+
+    .upload-subtext {
+        color: var(--text-secondary, #6c757d);
+        font-size: 0.9rem;
+    }
+
+    #medical_image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    /* Image preview using base template card styling */
+    .image-preview-container {
+        background: var(--card-bg, #f8f9fa);
+        border: 1px solid var(--border-color, #dee2e6);
+        border-radius: var(--border-radius-sm, 12px);
+        padding: 1rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .preview-image {
+        max-height: 300px;
+        max-width: 100%;
+        border-radius: var(--border-radius-sm, 12px);
+        box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.1));
+    }
+
+    .remove-preview-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: var(--transition, all 0.3s cubic-bezier(0.4, 0, 0.2, 1));
+    }
+
+    .remove-preview-btn:hover {
+        background: #c82333;
+        transform: scale(1.1);
+    }
+
+    /* Alert using base template warning gradient */
+    .simple-alert {
+        background: var(--warning-gradient, linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%));
+        border: 1px solid #ffeaa7;
+        border-left: 4px solid #ffc107;
+        color: #856404;
+        padding: 1rem;
+        border-radius: var(--border-radius-sm, 12px);
+        box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.04));
+    }
+
+    .simple-alert i {
+        color: #ffc107;
+        margin-right: 0.5rem;
+    }
+
+    /* Submit section */
+    .submit-section {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    /* Use button styling from base template */
+    .btn-analyze {
+        background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+        color: white;
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--border-radius-sm, 12px);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition, all 0.3s cubic-bezier(0.4, 0, 0.2, 1));
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.04));
+    }
+
+    .btn-analyze:hover:not(:disabled) {
+        background: var(--secondary-gradient, linear-gradient(135deg, #f093fb 0%, #f5576c 100%));
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+    }
+
+    .btn-analyze:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .loading-container {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-radius: var(--border-radius-sm, 12px);
+        text-align: center;
+    }
+
+    .spinner-border {
+        width: 2rem;
+        height: 2rem;
+        border-width: 3px;
+    }
+
+    .loading-text {
+        font-size: 1rem;
+        color: var(--text-primary, #495057);
+        margin-top: 1rem;
+    }
+
+    /* Tips section using base template card styling */
+    .tips-card {
+        background: var(--card-bg, #ffffff);
+        border: 1px solid var(--border-color, #dee2e6);
+        border-radius: var(--border-radius, 16px);
+        box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+        margin-top: 2rem;
+        transition: var(--transition, all 0.3s cubic-bezier(0.4, 0, 0.2, 1));
+    }
+
+    .tips-card:hover {
+        box-shadow: var(--shadow-lg, 0 8px 24px rgba(0,0,0,0.12));
+        transform: translateY(-2px);
+    }
+
+    .tips-header {
+        background: var(--success-gradient, linear-gradient(135deg, #4facfe 0%, #00f2fe 100%));
+        color: white;
+        padding: 1.5rem;
+        border-radius: var(--border-radius, 16px) var(--border-radius, 16px) 0 0;
+        border-bottom: 1px solid var(--border-color, #c3e6c3);
+    }
+
+    .tips-header h5 {
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .tips-header i {
+        color: white;
+    }
+
+    .tips-body {
+        padding: 1.5rem;
+    }
+
+    .tip-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+        padding: 0.5rem 0;
+    }
+
+    .tip-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .tip-icon {
+        margin-right: 0.75rem;
+        margin-top: 0.1rem;
+        font-size: 0.9rem;
+    }
+
+    .tip-text {
+        color: var(--text-primary, #495057);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .tip-positive .tip-icon {
+        color: #28a745;
+    }
+
+    .tip-negative .tip-icon {
+        color: #dc3545;
+    }
+
+    /* Button styling consistent with base template */
+    .btn-simple {
+        background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: var(--border-radius-sm, 12px);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.9rem;
+        transition: var(--transition, all 0.3s cubic-bezier(0.4, 0, 0.2, 1));
+        box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.04));
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-simple:hover {
+        background: var(--secondary-gradient, linear-gradient(135deg, #f093fb 0%, #f5576c 100%));
+        color: white;
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+    }
+
+    .btn-simple.btn-secondary {
+        background: #6c757d;
+    }
+
+    .btn-simple.btn-secondary:hover {
+        background: #545b62;
+    }
+
+    /* Mobile responsive adjustments */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding: 1rem;
+        }
+
+        .page-header {
+            padding: 1.5rem;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+        }
+
+        .upload-area {
+            padding: 1.5rem;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+        }
+
+        .btn-analyze {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .submit-section {
+            padding: 1.5rem;
+        }
+
+        .tips-header,
+        .tips-body {
+            padding: 1rem;
+        }
+
+        .btn-simple {
+            margin-bottom: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .page-header {
+            padding: 1rem;
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .form-section {
+            padding: 1rem;
+        }
+
+        .upload-area {
+            padding: 1rem;
+        }
+
+        .upload-icon {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Back button moved inside content block -->
+<div class="container-fluid-img">
+    <a href="{% url 'check_disease' %}" class="btn-simple btn-secondary">
+        <i class="fas fa-arrow-left"></i>
+        Back to Check Disease
+    </a>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h2><i class="fas fa-camera"></i> Medical Image Analysis</h2>
+        <p>Upload a medical image for AI-powered analysis and insights</p>
+    </div>
+
+    <!-- Main Form -->
+    <div class="form-card">
+        <form method="post" enctype="multipart/form-data" id="imageAnalysisForm">
+            {% csrf_token %}
+
+            <!-- Symptoms Section -->
+            <div class="form-section">
+                <label for="symptoms" class="form-label">
+                    <i class="fas fa-notes-medical"></i>
+                    Additional Symptoms (Optional)
+                </label>
+                <textarea class="form-control" id="symptoms" name="symptoms" rows="4"
+                        placeholder="Describe any additional symptoms you're experiencing to help improve analysis accuracy..."></textarea>
+                <div class="form-text">
+                    <i class="fas fa-info-circle"></i>
+                    Providing additional context helps improve analysis accuracy
+                </div>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div class="form-section">
+                <label for="medical_image" class="form-label">
+                    <i class="fas fa-upload"></i>
+                    Medical Image *
+                </label>
+
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">
+                        Click to select or drag & drop your medical image
+                    </div>
+                    <div class="upload-subtext">
+                        Supported formats: JPG, PNG, GIF (Max size: 10MB)
+                    </div>
+                    <input type="file" class="form-control" id="medical_image" name="medical_image"
+                           accept="image/*" required>
+                </div>
+
+                <div class="form-text">
+                    <i class="fas fa-shield-alt"></i>
+                    Your images are processed securely and not stored permanently
+                </div>
+            </div>
+
+            <!-- Image Preview Section -->
+            <div class="form-section" id="imagePreview" style="display: none;">
+                <label class="form-label">
+                    <i class="fas fa-eye"></i>
+                    Preview
+                </label>
+                <div class="image-preview-container">
+                    <button type="button" class="remove-preview-btn" onclick="removePreview()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <img id="previewImg" src="" alt="Preview" class="preview-image">
+                </div>
+            </div>
+
+            <!-- Important Notice -->
+            <div class="form-section">
+                <div class="simple-alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Important:</strong> This AI analysis is for informational purposes only and should not replace professional medical consultation. Always consult with healthcare providers for proper diagnosis and treatment.
+                </div>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="submit-section">
+                <button type="submit" class="btn-analyze" id="analyzeBtn">
+                    <i class="fas fa-search"></i>
+                    Analyze Image
+                </button>
+
+                <div class="loading-container" id="loadingSpinner" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Analyzing...</span>
+                    </div>
+                    <div class="loading-text">Analyzing your image, please wait...</div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tips Section -->
+    <div class="tips-card">
+        <div class="tips-header">
+            <h5>
+                <i class="fas fa-lightbulb"></i>
+                Tips for Better Analysis
+            </h5>
+        </div>
+        <div class="tips-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="tip-item tip-positive">
+                        <i class="fas fa-check tip-icon"></i>
+                        <p class="tip-text">Use good lighting conditions</p>
+                    </div>
+                    <div class="tip-item tip-positive">
+                        <i class="fas fa-check tip-icon"></i>
+                        <p class="tip-text">Keep the image clear and focused</p>
+                    </div>
+                    <div class="tip-item tip-positive">
+                        <i class="fas fa-check tip-icon"></i>
+                        <p class="tip-text">Include affected area completely</p>
+                    </div>
+                    <div class="tip-item tip-positive">
+                        <i class="fas fa-check tip-icon"></i>
+                        <p class="tip-text">Use high resolution images</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="tip-item tip-negative">
+                        <i class="fas fa-times tip-icon"></i>
+                        <p class="tip-text">Avoid blurry or dark images</p>
+                    </div>
+                    <div class="tip-item tip-negative">
+                        <i class="fas fa-times tip-icon"></i>
+                        <p class="tip-text">Don't include personal information</p>
+                    </div>
+                    <div class="tip-item tip-negative">
+                        <i class="fas fa-times tip-icon"></i>
+                        <p class="tip-text">Avoid extremely close-up shots</p>
+                    </div>
+                    <div class="tip-item tip-negative">
+                        <i class="fas fa-times tip-icon"></i>
+                        <p class="tip-text">Don't use heavily filtered images</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('medical_image');
+
+    // Drag and drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    uploadArea.addEventListener('drop', handleDrop, false);
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function highlight(e) {
+        uploadArea.classList.add('dragover');
+    }
+
+    function unhighlight(e) {
+        uploadArea.classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFiles(files);
+        }
+    }
+
+    // Image preview functionality
+    $('#medical_image').change(function() {
+        handleFiles(this.files);
+    });
+
+    function handleFiles(files) {
+        const file = files[0];
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select a valid image file.');
+                return;
+            }
+
+            // Validate file size (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size must be less than 10MB.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#previewImg').attr('src', e.target.result);
+                $('#imagePreview').slideDown(300);
+
+                // Update upload area text
+                $('.upload-text').text('Image selected: ' + file.name);
+                $('.upload-subtext').text('Click to change or drag a new image');
+                $('.upload-icon').html('<i class="fas fa-check-circle"></i>');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Remove preview function
+    window.removePreview = function() {
+        $('#imagePreview').slideUp(300);
+        $('#medical_image').val('');
+
+        // Reset upload area text
+        $('.upload-text').text('Click to select or drag & drop your medical image');
+        $('.upload-subtext').text('Supported formats: JPG, PNG, GIF (Max size: 10MB)');
+        $('.upload-icon').html('<i class="fas fa-cloud-upload-alt"></i>');
+    };
+
+    // Form submission with loading state
+    $('#imageAnalysisForm').submit(function(e) {
+        // Validate file selection
+        if (!$('#medical_image')[0].files.length) {
+            e.preventDefault();
+            alert('Please select a medical image to analyze.');
+            return false;
+        }
+
+        $('#analyzeBtn').prop('disabled', true);
+        $('#loadingSpinner').slideDown(300);
+
+        // Progressive loading messages
+        const loadingMessages = [
+            'Analyzing your image, please wait...',
+            'Processing image data...',
+            'Running AI analysis...',
+            'Generating detailed report...',
+            'Almost ready...'
+        ];
+
+        let messageIndex = 0;
+        const messageInterval = setInterval(function() {
+            if ($('#loadingSpinner').is(':visible') && messageIndex < loadingMessages.length - 1) {
+                messageIndex++;
+                $('.loading-text').fadeOut(200, function() {
+                    $(this).text(loadingMessages[messageIndex]).fadeIn(200);
+                });
+            }
+        }, 2000);
+
+        // Clean up interval
+        setTimeout(function() {
+            clearInterval(messageInterval);
+        }, 15000);
+    });
+
+    // Click upload area to trigger file input
+    uploadArea.addEventListener('click', function(e) {
+        if (e.target !== fileInput) {
+            fileInput.click();
+        }
+    });
+});
+</script>
+{% endblock %}
